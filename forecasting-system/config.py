@@ -1,0 +1,8 @@
+TICKER = "AAPL"
+
+START = "2015-01-01"
+END = "20244-01-01"
+
+TRAIN_RATIO = 0.8
+
+FORECAST_HORIZON = 1 # 1 day ahead 
