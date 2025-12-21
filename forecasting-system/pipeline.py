@@ -1,18 +1,13 @@
 from config import *
-from data.dataloader import load_price_data, compute_log_returns , prepare_series
+from data.dataloader import load_price_data 
+from data.dataprocessing import compute_log_returns  , train_test_split
 from evaluation.diagnostics import adf_test
 from evaluation.metric import rmse , directional_accuracy
 from models.arimamodel import ARIMAModel
 
-def train_test_split(series, train_ratio):
-    split_idx = int(len(series) * train_ratio)
-    train = series.iloc[:split_idx]
-    test = series.iloc[split_idx:]
-    return train, test
-
 def run_pipeline():
     prices = load_price_data(TICKER, START, END)
-    series = prepare_series(prices, method="log_return")
+    series = compute_log_returns(prices)
 
     adf = adf_test(series)
     print("Stationary:", adf["is_stationary"])
@@ -25,4 +20,4 @@ def run_pipeline():
     preds = model.forecast(len(test))
 
     print("RMSE:", rmse(test, preds))
-    print("DA:", directional_accuracy(test, preds))
+    #print("DA:", directional_accuracy(test, preds))
