@@ -1,6 +1,7 @@
 from statsmodels.tsa.stattools import adfuller
 
 def adf_test(series):
+    series = series.dropna()
     result = adfuller(series)
     return {
         "adf_stat": result[0],

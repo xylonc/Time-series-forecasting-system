@@ -1,30 +1,20 @@
 import yfinance as yf
 import pandas as pd
-import numpy as np
-from Exceptions.Exceptions import PriceColumnNotFound
+from Exceptions.PriceColumnNotFoundException import PriceColumnNotFoundException
 
-def load_price_data(ticker, start_date, end_date):
-    data = yf.download(
-        ticker,
-        start = start_date,
-        end = end_date,
-        progress=False
-    )
-    if data.empty:
-        raise ValueError(f"There seems to be an error with the ticker '{ticker}'")
-    
+
+def load_price_data(ticker, start, end) -> pd.Series:
+    data = yf.download(ticker, start=start, end=end, progress=False , auto_adjust= True)
+
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
+
     if "Adj Close" in data.columns:
-        prices = data["Adj Close"]
+        return data["Adj Close"]
     elif "Close" in data.columns:
-        prices = data["Close"]
-        print("Warning: Using Close instead of Adjusted Close as Adjusted close does not exist,likely due to oudated yfinance")
+        print("Warning: Using Close instead of Adjusted Close")
+        return data["Close"]
     else:
-        raise PriceColumnNotFound(
-            "Price column not found."
-            f"Only have: {list(data.columns)}"
+        raise PriceColumnNotFoundException(
+            f"No price column found. Columns: {list(data.columns)}"
         )
-    prices.name = ticker
-    return prices  
-    
-
-    

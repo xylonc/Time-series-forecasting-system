@@ -1,0 +1,2 @@
+class PriceColumnNotFoundException(Exception):
+    pass
